@@ -1,38 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Elegance | Customized Jewellery</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Aura Elegance</h1>
-        <p>Elegance in Every Element</p>
-        <nav>
-            <a href="#products">Jewellery</a>
-            <a href="#cart">Cart (<span id="cart-count">0</span>)</a>
-            <a href="#wishlist">Wishlist (<span id="wishlist-count">0</span>)</a>
-        </nav>
-    </header>
+// Sample Jewellery Product Data - Expanded
+const products = [
+    { id: 1, name: "Custom Name Necklace", price: 65.00, image: "necklace", description: "Personalized script font necklace in gold." },
+    { id: 2, name: "Emerald Cut Ring", price: 1200.00, image: "ring", description: "1ct simulated Emerald Cut Zirconia." },
+    { id: 3, name: "Engraved Bangle Bracelet", price: 85.00, image: "bracelet", description: "Customizable text or symbol engraving." },
+    { id: 4, name: "Diamond Stud Earrings", price: 450.00, image: "earrings", description: "Classic 0.5ct diamond alternative studs." }
+];
 
-    <main id="products-container">
-        </main>
+let cart = [];
+let wishlist = [];
 
-    <div id="cart-popup" class="popup">
-        <h2>Your Cart</h2>
-        <ul id="cart-items"></ul>
-        <p>Total: $<span id="cart-total">0.00</span></p>
-        <button onclick="closePopup('cart-popup')">Close</button>
-    </div>
+// --- UTILITY/POPUP FUNCTIONS ---
 
-    <div id="wishlist-popup" class="popup">
-        <h2>Your Wishlist</h2>
-        <ul id="wishlist-items"></ul>
-        <button onclick="closePopup('wishlist-popup')">Close</button>
-    </div>
+function renderProducts() {
+    const container = document.getElementById('products-container');
+    container.innerHTML = ''; // Clear existing content
 
-    <script src="script.js"></script>
-</body>
-</html>s
+    products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+
+        // NOTE: Using a simple placeholder URL that varies by product name for realism
+        const placeholderUrl = https://via.placeholder.com/300x200/5F9EA0/FFFFFF?text=${product.name.replace(/\s/g, '+')};
+        
+        // Product Image, Name, Price (All required elements)
+        card.innerHTML += <img src="${placeholderUrl}" alt="${product.name}">;
+        card.innerHTML += <h3>${product.name}</h3>;
+        card.innerHTML += <p>${product.description}</p>;
+        card.innerHTML += <div class="price">$${product.price.toFixed(2)}</div>; // Product Price
+
+        // Add to Cart Button
+        card.innerHTML += <button onclick="addToCart(${product.id})">Add to Cart</button>;
+
+        // Wishlist Button
+        card.innerHTML += <button onclick="addToWishlist(${product.id})">Wishlist</button>;
+
+        container.appendChild(card);
+    });
+}
+
+function updateCounts() {
+    document.getElementById('cart-count').textContent = cart.length;
+    document.getElementById('wishlist-count').textContent = wishlist.length;
+}
+
+function openPopup(id) {
+    // Hide all popups first to ensure clean state
+    document.querySelectorAll('.popup').forEach(p => p.style.display = 'none');
+    
+    // Show the requested popup
+    document.getElementById(id).style.display = 'block';
+    if (id === 'cart-popup') renderCart();
+    if (id === 'wishlist-popup') renderWishlist();
+}
+
+function closePopup(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+
+// --- AUTHENTICATION FUNCTIONS (FRONT-END ONLY) ---
+
+function handleLogin(event) {
+    event.preventDefault(); // Stop the form from submitting normally
+    const email = document.getElementById('login-email').value;
+    // In a real application, you would send this data to a server for verification.
+    
+    alert(LOG IN attempt for: ${email}. (Success on the front-end));
+    closePopup('login-popup');
+    // Clear form fields
+    event.target.reset();
+}
+
+function handleSignIn(event) {
+    event.preventDefault(); // Stop the form from submitting normally
+    const name = document.getElementById('signin-name').value;
+    const email = document.getElementById('signin-email').value;
+    // In a real application, you would send this data to a server to create the account.
+
+    alert(ACCOUNT CREATED for: ${name} (${email}). (Success on the front-end));
+    closePopup('signin-popup');
+    // Clear form fields
+    event.target.reset();
+}
+
+function showSigninFromLogin() {
+    closePopup('login-popup');
+    openPopup('signin-popup');
+}
+
+function showLoginFromSignin() {
+    closePopup('signin-popup');
+    openPopup('login-popup');
+}
+
+
+// --- FEATURE FUNCTIONS (Cart/Wishlist, same as before) ---
+
+function addToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+        cart.push(product);
+        updateCounts();
+        alert(${product.name} added to cart!);
+    }
+}
+
+function addToWishlist(productId) {
+    const product = products.find(p => p.id === productId);
+    const exists = wishlist.some(p => p.id === productId);
+    
+    if (product && !exists) {
+        wishlist.push(product);
+        updateCounts();
+        alert(${product.name} added to wishlist!);
+    } else if (exists) {
+        alert(${product.name} is already in your wishlist.);
+    }
+}
+
+function renderCart() {
+    const cartList = document.getElementById('cart-items');
+    let total = 0;
+    cartList.innerHTML = '';
+
+    if (cart.length === 0) {
+        cartList.innerHTML = '<li>Your cart is empty.</li>';
+    } else {
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = <span>${item.name}</span><span>$${item.price.toFixed(2)}</span>;
+            cartList.appendChild(li);
+            total += item.price;
+        });
+    }
+
+    document.getElementById('cart-total').textContent = total.toFixed(2);
+}
+
+function renderWishlist() {
+    const wishlistList = document.getElementById('wishlist-items');
+    wishlistList.innerHTML = '';
+
+    if (wishlist.length === 0) {
+        wishlistList.innerHTML = '<li>Your wishlist is empty.</li>';
+    } else {
+        wishlist.forEach(item => {
+            const li = document.createElement('li');
+            li.innerHTML = <span>${item.name}</span><span>$${item.price.toFixed(2)}</span>;
+            wishlistList.appendChild(li);
+        });
+    }
+}
+
+// Initial setup on page load
+document.addEventListener('DOMContentLoaded', () => {
+    renderProducts();
+    updateCounts();
+});
